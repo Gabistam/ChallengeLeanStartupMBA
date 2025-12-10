@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA & Dev Web - Challenge Lean Startup MBA EMD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-alt: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --text-light: #ffffff;
+            --text-dark: #2d3748;
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-light);
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            padding: 3rem;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .grid-item {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .grid-item h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: var(--gradient-alt);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .pill {
+            display: inline-block;
+            background: var(--accent);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0.3rem;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .emoji {
+            font-size: 2rem;
+            margin-right: 0.5rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding: 0.8rem 0;
+            padding-left: 2rem;
+            position: relative;
+            font-size: 1.1rem;
+        }
+
+        li:before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .workflow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .workflow-step {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            margin: 0.5rem;
+            min-width: 200px;
+        }
+
+        .workflow-arrow {
+            font-size: 2rem;
+            color: var(--accent);
+            margin: 0 0.5rem;
+        }
+
+        .exercise-box {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.3) 0%, rgba(245, 87, 108, 0.3) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--accent);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+        }
+
+        .comparison-table {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .comparison-card.bad {
+            border-left-color: #f5576c;
+        }
+
+        .comparison-card.good {
+            border-left-color: #4ade80;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            .slide { padding: 2rem; }
+            .two-column { grid-template-columns: 1fr; }
+            .workflow { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">12</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Page de titre -->
+        <div class="slide active">
+            <h1>🤖 IA & Dev Web</h1>
+            <p class="subtitle">Créer des sites web modernes sans coder (ou presque)</p>
+            <div class="card" style="margin-top: 4rem;">
+                <h3>Challenge Lean Startup - MBA EMD 1</h3>
+                <p style="font-size: 1.2rem; margin-top: 1rem;">
+                    <strong>Objectif :</strong> Maîtriser les outils IA pour construire votre landing page et prototype
+                </p>
+                <div style="margin-top: 2rem;">
+                    <span class="pill">No-code</span>
+                    <span class="pill">IA Générative</span>
+                    <span class="pill">Prompting</span>
+                    <span class="pill">WordPress</span>
+                </div>
+            </div>
+            <p style="margin-top: 3rem; font-size: 1.1rem; opacity: 0.8;">
+                📅 10 décembre 2025 | ⏱️ 1h | 📍 Salle DOLTO
+            </p>
+        </div>
+
+        <!-- Slide 2: Types d'IA -->
+        <div class="slide">
+            <h2>🎯 Les Types d'IA</h2>
+            <div class="grid">
+                <div class="grid-item">
+                    <div class="icon">✨</div>
+                    <h3>IA Générative</h3>
+                    <p>Créer du contenu : texte, image, code, audio</p>
+                    <div style="margin-top: 1rem;">
+                        <strong>Exemples :</strong>
+                        <ul style="margin-top: 0.5rem;">
+                            <li>ChatGPT</li>
+                            <li>Midjourney</li>
+                            <li>Gemini</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="icon">⚡</div>
+                    <h3>IA d'Automatisation</h3>
+                    <p>Gérer des workflows et tâches répétitives</p>
+                    <div style="margin-top: 1rem;">
+                        <strong>Exemples :</strong>
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Zapier AI</li>
+                            <li>Make</li>
+                            <li>n8n</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="icon">📊</div>
+                    <h3>IA d'Analyse</h3>
+                    <p>Extraire des insights de vos données</p>
+                    <div style="margin-top: 1rem;">
+                        <strong>Exemples :</strong>
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Google Analytics AI</li>
+                            <li>HubSpot AI</li>
+                            <li>Tableau AI</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Outils IA Populaires -->
+        <div class="slide">
+            <h2>🔥 Outils IA Génératives Populaires</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Outil</th>
+                        <th>Spécialité</th>
+                        <th>Gratuit</th>
+                        <th>Meilleur pour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ChatGPT</strong></td>
+                        <td>Texte & Code</td>
+                        <td>✅</td>
+                        <td>Rédaction, code, brainstorming</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Claude</strong></td>
+                        <td>Texte long</td>
+                        <td>✅</td>
+                        <td>Documents, analyse complexe</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gemini</strong></td>
+                        <td>Multimodal</td>
+                        <td>✅</td>
+                        <td>Recherche Google intégrée</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Perplexity</strong></td>
+                        <td>Recherche</td>
+                        <td>✅</td>
+                        <td>Sources vérifiées</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="card" style="margin-top: 2rem;">
+                <p style="font-size: 1.2rem;">
+                    💡 <strong>Astuce :</strong> Pour ce projet, privilégiez <span class="highlight">ChatGPT</span> 
+                    ou <span class="highlight">Claude</span> pour la génération de contenu et de code.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Qu'est-ce qu'un Prompt -->
+        <div class="slide">
+            <h2>✍️ Qu'est-ce qu'un Prompt ?</h2>
+            <div class="card">
+                <h3>Définition</h3>
+                <p style="font-size: 1.2rem;">
+                    Un prompt est une <span class="highlight">instruction donnée à une IA</span> pour obtenir un résultat précis.
+                </p>
+                <p style="margin-top: 1rem; font-size: 1.1rem; opacity: 0.9;">
+                    🎯 Analogie : Donner des instructions à un assistant très intelligent mais <strong>littéral</strong>
+                </p>
+            </div>
+
+            <div class="comparison-table" style="margin-top: 2rem;">
+                <div class="comparison-card bad">
+                    <h3 style="color: #f5576c;">❌ Prompt Faible</h3>
+                    <div class="code-block">
+                        Crée-moi un site web
+                    </div>
+                    <p><strong>Problème :</strong> Trop vague, résultat générique et inutilisable</p>
+                </div>
+                <div class="comparison-card good">
+                    <h3 style="color: #4ade80;">✅ Prompt Fort</h3>
+                    <div class="code-block">
+                        Crée une landing page HTML/CSS pour un service de coaching en reconversion professionnelle. 
+                        Cible : cadres 35-50 ans. Style moderne, couleurs professionnelles (bleu/gris), 
+                        sections : hero, bénéfices (3), témoignages, formulaire de contact, footer.
+                    </div>
+                    <p><strong>Résultat :</strong> Précis, contextualisé, directement utilisable</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Méthode 1 - Prompt Magic -->
+        <div class="slide">
+            <h2>⚡ Méthode 1 : Prompt Magic</h2>
+            <div class="card">
+                <h3>La technique la plus simple pour débuter</h3>
+                <p style="font-size: 1.2rem; margin-top: 1rem;">
+                    Après avoir posé votre question à l'IA, ajoutez systématiquement :
+                </p>
+                <div class="code-block" style="font-size: 1.1rem;">
+                    "Pose-moi des questions de clarification te permettant d'être sûr à 95% de pouvoir réussir ta mission"
+                </div>
+            </div>
+
+            <div class="two-column" style="margin-top: 2rem;">
+                <div>
+                    <h3>✅ Avantages</h3>
+                    <ul>
+                        <li>Rapide à mettre en œuvre</li>
+                        <li>L'IA pose les bonnes questions</li>
+                        <li>Idéal pour débuter</li>
+                        <li>Évite les oublis</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>📝 Exemple</h3>
+                    <div class="code-block" style="font-size: 0.9rem;">
+Je dois créer une landing page pour mon projet Lean Startup.
+
+Pose-moi des questions de clarification te permettant d'être sûr à 95% de pouvoir réussir ta mission.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Méthode 2 - Les 5 Piliers -->
+        <div class="slide">
+            <h2>🏛️ Méthode 2 : Les 5 Piliers</h2>
+            <div class="grid">
+                <div class="grid-item">
+                    <div class="emoji">🎯</div>
+                    <h3>1. CONTEXTE</h3>
+                    <p>Qui êtes-vous ? Pour qui travaillez-vous ?</p>
+                    <div class="code-block" style="margin-top: 1rem; font-size: 0.85rem;">
+Je suis étudiant MBA Marketing Digital, je travaille sur un projet Lean Startup...
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="emoji">📋</div>
+                    <h3>2. TÂCHE</h3>
+                    <p>Que voulez-vous obtenir ? (verbe d'action)</p>
+                    <div class="code-block" style="margin-top: 1rem; font-size: 0.85rem;">
+Crée une landing page avec hero, bénéfices, formulaire...
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="emoji">📐</div>
+                    <h3>3. FORMAT</h3>
+                    <p>Comment structurer le résultat ?</p>
+                    <div class="code-block" style="margin-top: 1rem; font-size: 0.85rem;">
+HTML/CSS avec Tailwind, responsive mobile-first...
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="emoji">⚙️</div>
+                    <h3>4. CONTRAINTES</h3>
+                    <p>Limites et règles</p>
+                    <div class="code-block" style="margin-top: 1rem; font-size: 0.85rem;">
+Maximum 3 sections, ton professionnel, couleurs modernes...
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <div class="emoji">💡</div>
+                    <h3>5. EXEMPLE</h3>
+                    <p>Guider le style attendu (optionnel)</p>
+                    <div class="code-block" style="margin-top: 1rem; font-size: 0.85rem;">
+Inspiré de airbnb.com pour le design épuré...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Exercice Pratique -->
+        <div class="slide">
+            <h2>🎯 Exercice Pratique</h2>
+            <div class="exercise-box">
+                <h3>Scénario</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+                    Vous devez créer une <strong>landing page</strong> pour un service de 
+                    <span class="highlight">coaching en reconversion professionnelle</span>
+                </p>
+                
+                <h3>Consigne</h3>
+                <p style="font-size: 1.1rem;">
+                    ✍️ <strong>En binôme</strong>, rédigez un prompt complet avec les <strong>5 piliers</strong> 
+                    pour générer le contenu de cette page
+                </p>
+
+                <div class="card" style="margin-top: 2rem; background: rgba(255,255,255,0.1);">
+                    <h3>Informations à intégrer :</h3>
+                    <ul>
+                        <li>Cible : Cadres 35-50 ans en questionnement</li>
+                        <li>Sections : Hero, 3 bénéfices, témoignages, CTA</li>
+                        <li>Ton : Professionnel mais chaleureux</li>
+                        <li>Couleurs : Bleu/gris pour la confiance</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="text-align: center; font-size: 1.1rem; margin-top: 2rem; opacity: 0.9;">
+                ⏱️ Temps : 5 minutes | Correction collective ensuite
+            </p>
+        </div>
+
+        <!-- Slide 8: Tableau Comparatif Outils -->
+        <div class="slide">
+            <h2>🛠️ Outils IA pour Dev Web</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Outil</th>
+                        <th>Niveau requis</th>
+                        <th>Gratuit</th>
+                        <th>Meilleur pour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Zip.dev + WordPress</strong></td>
+                        <td><span class="pill" style="background: #4ade80;">No-code</span></td>
+                        <td>✅</td>
+                        <td>Sites vitrines, blogs, portfolios</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bolt.new</strong></td>
+                        <td><span class="pill" style="background: #f59e0b;">Code/No-code</span></td>
+                        <td>✅ (limité)</td>
+                        
+                        <td>Applications web, prototypes rapides</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lovable.dev</strong></td>
+                        <td><span class="pill" style="background: #4ade80;">No-code</span></td>
+                        <td>✅</td>
+                        
+                        <td>MVP, landing pages modernes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Antigravity.app</strong></td>
+                        <td><span class="pill" style="background: #f59e0b;">Code/No-code</span></td>
+                        <td>✅</td>
+                        
+                        <td>Applications web, prototypes rapides</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="card" style="margin-top: 2rem;">
+                <p style="font-size: 1.1rem;">
+                    💡 <strong>Recommandation :</strong> Pour ce projet, privilégiez 
+                    <span class="highlight">Lovable</span> ou <span class="highlight">Zip + WordPress</span> 
+                    selon vos besoins de flexibilité.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quel outil pour quel profil -->
+        <div class="slide">
+            <h2>🎯 Quel Outil pour Quel Profil ?</h2>
+            <div class="two-column">
+                <div class="card">
+                    <h3>📊 Profil No-Code</h3>
+                    <div style="margin-top: 1.5rem;">
+                        <p style="margin-bottom: 1rem;"><strong>Besoin simple (vitrine/landing)</strong></p>
+                        <div style="padding-left: 1rem; border-left: 3px solid var(--accent);">
+                            → <strong>Lovable</strong> ou <strong>Antigravity</strong>
+                            <ul style="margin-top: 0.5rem; opacity: 0.9;">
+                                <li>Génération instantanée</li>
+                                <li>Design moderne</li>
+                                <li>Hébergement inclus</li>
+                            </ul>
+                        </div>
+
+                        <p style="margin: 1.5rem 0 1rem;"><strong>Besoin CMS (blog, contenu évolutif)</strong></p>
+                        <div style="padding-left: 1rem; border-left: 3px solid var(--accent);">
+                            → <strong>Zip + WordPress</strong>
+                            <ul style="margin-top: 0.5rem; opacity: 0.9;">
+                                <li>Gestion de contenu facile</li>
+                                <li>Plugins puissants</li>
+                                <li>SEO optimisé</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>💻 Profil avec Bases de Code</h3>
+                    <div style="margin-top: 1.5rem;">
+                        <p style="margin-bottom: 1rem;"><strong>Besoin de flexibilité</strong></p>
+                        <div style="padding-left: 1rem; border-left: 3px solid #f093fb;">
+                            → <strong>Bolt.new ou Antigravity</strong>
+                            <ul style="margin-top: 0.5rem; opacity: 0.9;">
+                                <li>Code éditable</li>
+                                <li>Framework moderne (React/Vue)</li>
+                                <li>Déploiement facile</li>
+                            </ul>
+                        </div>
+
+                        <p style="margin: 1.5rem 0 1rem;"><strong>Besoin d'apprentissage</strong></p>
+                        <div style="padding-left: 1rem; border-left: 3px solid #f093fb;">
+                            → <strong>Bolt</strong> (voir le code généré)
+                            <ul style="margin-top: 0.5rem; opacity: 0.9;">
+                                <li>Comprendre les patterns</li>
+                                <li>Modifier et itérer</li>
+                                <li>Stack professionnelle</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Cas d'Usage Marketing -->
+        <div class="slide">
+            <h2>💼 Cas d'Usage Marketing Digital</h2>
+            <div class="card">
+                <h3>🛍️ Projet 1 : Site Vitrine E-commerce</h3>
+                <p><strong>Outil :</strong> <span class="highlight">Zip + WordPress (WooCommerce)</span></p>
+                <p><strong>Pourquoi :</strong> CMS robuste, gestion produits, SEO intégré</p>
+                <div class="code-block" style="margin-top: 1rem;">
+Crée un site WordPress pour une boutique de cosmétiques bio avec 3 pages : 
+Accueil, Produits, À propos. Style épuré, couleurs naturelles (vert/beige), 
+focus sur la transparence des ingrédients. Intégrer WooCommerce pour 
+la gestion de 20 produits max.
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <h3>🎯 Projet 2 : Landing Page Captation de Leads</h3>
+                <p><strong>Outil :</strong> <span class="highlight">Lovable</span></p>
+                <p><strong>Pourquoi :</strong> Rapide, design moderne, formulaire intégré</p>
+                <div class="code-block" style="margin-top: 1rem;">
+Génère une landing page pour un webinaire gratuit "Les bases du SEO en 2025". 
+Inclure : titre accrocheur avec emoji, 3 bénéfices clés en cards, 
+formulaire email (nom, email, métier), countdown timer 48h, 
+2 témoignages d'anciens participants. Couleurs : gradient bleu/violet.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Workflow Recommandé -->
+        <div class="slide">
+            <h2>🚀 Workflow Recommandé</h2>
+            <div class="workflow">
+                <div class="workflow-step">
+                    <div class="icon">💡</div>
+                    <h3>1. Idéation</h3>
+                    <p>ChatGPT/Claude</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>Définir structure</li>
+                        <li>Rédiger contenu</li>
+                        <li>Créer personas</li>
+                    </ul>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="icon">🎨</div>
+                    <h3>2. Génération</h3>
+                    <p>Outil IA Web</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>Choisir selon profil</li>
+                        <li>Générer le site</li>
+                        <li>Itérer si besoin</li>
+                    </ul>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="icon">🌐</div>
+                    <h3>3. Hébergement</h3>
+                    <p>PlanetHoster</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>WordPress : cPanel</li>
+                        <li>HTML : FTP/Git</li>
+                        <li>Nom de domaine</li>
+                    </ul>
+                </div>
+                <div class="workflow-arrow">→</div>
+                <div class="workflow-step">
+                    <div class="icon">⚡</div>
+                    <h3>4. Optimisation</h3>
+                    <p>Itération</p>
+                    <ul style="text-align: left; margin-top: 1rem;">
+                        <li>Tester UX</li>
+                        <li>Ajuster prompts</li>
+                        <li>Régénérer</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 2rem;">
+                <p style="font-size: 1.1rem;">
+                    💡 <strong>Astuce :</strong> Commencez simple avec Lovable pour un MVP rapide, 
+                    puis migrez vers WordPress si besoin d'évolutivité.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Ressources -->
+        <div class="slide">
+            <h2>📚 Ressources à Emporter</h2>
+            <div class="grid">
+                <div class="grid-item" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);">
+                    <div class="icon">📄</div>
+                    <h3>Fiche Mémo Prompting</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li>Les 5 piliers en 1 page</li>
+                        <li>10 prompts prêts à l'emploi</li>
+                        <li>Template à compléter</li>
+                    </ul>
+                </div>
+                <div class="grid-item" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.3) 0%, rgba(245, 87, 108, 0.3) 100%);">
+                    <div class="icon">🛠️</div>
+                    <h3>Guide Comparatif Outils</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li>Tableau détaillé</li>
+                        <li>Tutoriels d'accès</li>
+                        <li>FAQ techniques</li>
+                    </ul>
+                </div>
+                <div class="grid-item" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.3) 100%);">
+                    <div class="icon">🚀</div>
+                    <h3>Checklist Projet</h3>
+                    <ul style="margin-top: 1rem;">
+                        <li>Workflow de A à Z</li>
+                        <li>Points de vigilance</li>
+                        <li>Ressources complémentaires</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card" style="margin-top: 2rem; text-align: center;">
+                <h3>🎯 Questions ?</h3>
+                <p style="font-size: 1.2rem; margin-top: 1rem;">
+                    N'hésitez pas, c'est le moment ! 🙋
+                </p>
+                <p style="margin-top: 1.5rem; font-size: 1.1rem; opacity: 0.9;">
+                    Bonne chance pour votre Challenge Lean Startup ! 🚀
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn">← Précédent</button>
+        <button class="nav-btn" id="nextBtn">Suivant →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentSlideSpan = document.getElementById('current-slide');
+        const totalSlidesSpan = document.getElementById('total-slides');
+
+        totalSlidesSpan.textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            currentSlideSpan.textContent = currentSlide + 1;
+            
+            // Disable/enable buttons at edges
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+        }
+
+        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+        nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') showSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight') showSlide(currentSlide + 1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
